@@ -3,6 +3,10 @@
 #include <string.h>
 #include "shellmemory.h"
 #include "shell.h"
+#include "unistd.h"
+#include <dirent.h>
+#include "utils.h"
+
 
 int MAX_ARGS_SIZE = 7;
 
@@ -22,12 +26,18 @@ int badcommandFileDoesNotExist() {
     return 3;
 }
 
+int failedExecution() {
+    printf("Execution Failed");
+    return 4;
+}
+
 int help();
 int quit();
 int set(char *var, char *values[], int args_size);
 int print(char *var);
 int echo(char *var);
 int run(char *script);
+int my_ls();
 int badcommandFileDoesNotExist();
 
 // Interpret commands and their arguments
@@ -69,7 +79,9 @@ int interpreter(char* command_args[], int args_size) {
     } else if (strcmp(command_args[0], "run") == 0) {
         if (args_size != 2) return badcommand();
         return run(command_args[1]);
-
+    } else if (strcmp(command_args[0], "my_ls") == 0) {
+        if (args_size != 1) return badcommand();
+        return my_ls();
     } else return badcommand();
 }
 
@@ -149,4 +161,37 @@ int run(char *script) {
     fclose(p);
 
     return errCode;
+}
+
+int my_ls() {
+    char **array = NULL;
+    int capacity = 0;
+    int count = 0;
+
+    DIR *dir = opendir(".");
+    if (!dir) return failedExecution();
+    
+    struct dirent *entry;
+    // get filenames 
+    while ((entry = readdir(dir)) != NULL) {
+        if (count == capacity) {
+            array = realloc(array, capacity * sizeof(char*));
+            if (array == NULL) {
+                return failedExecution();
+            }
+        }
+        
+        array[count++] = strdup(strdup(entry->d_name));
+    }
+
+    closedir(dir);
+
+
+    qsort(array, count, sizeof(char*), filename_comparator);
+
+    for (int i = 0; i  < count; i++) {
+        printf("%s\n", array[i]);
+    }
+
+    return 0;
 }

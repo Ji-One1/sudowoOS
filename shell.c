@@ -28,13 +28,13 @@ int main(int argc, char *argv[]) {
     mem_init();
     while(1) {
         if (interactive) printf("%c ", prompt);
-
-        if (fgets(userInput, MAX_USER_INPUT-1, input) == NULL && !interactive) { //switch input to interactive mode
+        //check for EOF for batch mode
+        if (fgets(userInput, MAX_USER_INPUT-1, input) == NULL && !interactive) { 
             input = fopen("/dev/tty", "r");
             interactive = 1;
             continue;
         };
-        
+
         errorCode = parseInput(userInput);
         if (errorCode == -1) exit(99);	// ignore all other errors
         memset(userInput, 0, sizeof(userInput));
