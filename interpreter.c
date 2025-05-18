@@ -178,8 +178,11 @@ int run(char *script) {
 
 int my_ls() {
     char **array = NULL;
-    int capacity = 0;
+    int capacity = 10;
     int count = 0;
+
+    array = malloc(capacity * sizeof(char*));
+    if (!array) return failedExecution();
 
     DIR *dir = opendir(".");
     if (!dir) return failedExecution();
@@ -187,9 +190,14 @@ int my_ls() {
     struct dirent *entry;
     // get filenames 
     while ((entry = readdir(dir)) != NULL) {
+        //skip hidden files
+        if (entry->d_name[0] == '.') continue;
+
         if (count == capacity) {
+            capacity *= 2;
             array = realloc(array, capacity * sizeof(char*));
             if (array == NULL) {
+                free(array);
                 return failedExecution();
             }
         }
