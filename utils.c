@@ -35,8 +35,14 @@ int filename_comparator(const void *a, const void *b) {
     return strcmp(name1, name2);
 }
 
-int is_alphanumeric(char c) {
-    return ( (c >= 'A' && c <= 'Z') ||
-             (c >= 'a' && c <= 'z') ||
-             (c >= '0' && c <= '9') );
+int is_alphanumeric(const char *str) {
+    if (str == NULL) return 0;
+
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (!isalnum((unsigned char)str[i])) {
+            return 0;  // false
+        }
+    }
+
+    return 1;  // true
 }
