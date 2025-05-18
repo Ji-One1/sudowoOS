@@ -17,6 +17,7 @@ int main(int argc, char *argv[]) {
     char userInput[MAX_USER_INPUT];		// user's input stored here
     int errorCode = 0;					// zero means no error, default
     int interactive = isatty(fileno(stdin)); // 0 for batch, 1 for interactive
+    FILE *input = stdin; // current input source
 
     //init user input
     for (int i = 0; i < MAX_USER_INPUT; i++) {
@@ -26,11 +27,14 @@ int main(int argc, char *argv[]) {
     //init shell memory
     mem_init();
     while(1) {
-        printf("%c ", prompt);
-        // here you should check the unistd library
-        // so that you can find a way to not display $ in the batch mode
-        fgets(userInput, MAX_USER_INPUT-1, stdin);
         if (interactive) printf("%c ", prompt);
+
+        if (fgets(userInput, MAX_USER_INPUT-1, input) == NULL && !interactive) { //switch input to interactive mode
+            input = fopen("/dev/tty", "r");
+            interactive = 1;
+            continue;
+        };
+        
         errorCode = parseInput(userInput);
         if (errorCode == -1) exit(99);	// ignore all other errors
         memset(userInput, 0, sizeof(userInput));
