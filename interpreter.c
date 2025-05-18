@@ -45,6 +45,8 @@ int echo(char *var);
 int run(char *script);
 int my_ls();
 int my_mkdir(char *dirname);
+int my_touch(char *filename);
+int my_cd(char *dirname);
 int badcommandFileDoesNotExist();
 
 // Interpret commands and their arguments
@@ -94,6 +96,13 @@ int interpreter(char* command_args[], int args_size) {
     } else if (strcmp(command_args[0], "my_mkdir") == 0) {
         if (args_size != 2) return badcommand();
         return my_mkdir(command_args[1]);
+
+    } else if (strcmp(command_args[0], "my_touch") == 0) {
+        if (args_size != 2) return badcommand();
+        return my_touch(command_args[1]);
+    } else if (strcmp(command_args[0], "my_cd") == 0) {
+    if (args_size != 2) return badcommand();
+    return my_cd(command_args[1]); 
 
     } else return badcommand();
 }
@@ -237,3 +246,22 @@ int my_mkdir(char *dirname) {
     mkdir(dirname, 0755);
     return 0;
 }
+
+int my_touch(char *filename) {
+
+    if (!is_alphanumeric(filename)) return badcommandCustom("my_touch");
+ 
+    FILE *file = fopen(filename, "a");
+    fclose(file);
+    return 0;
+}
+
+int my_cd(char *dirname) {
+    if (!is_alphanumeric(dirname) && dirname[0] != '.') return badcommandCustom("my_cd");
+ 
+    if (chdir(dirname) == 0) {
+        return 0;
+    } 
+    return badcommandCustom("my_cd"); 
+}
+
