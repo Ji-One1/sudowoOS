@@ -51,21 +51,30 @@ int wordEnding(char c) {
 
 int parseInput(char inp[]) {
     char tmp[200], *words[100];
-    int ix = 0, w = 0;
+    int ix = 0, w = 0, tWordLen = 0;
     int wordlen;
     int errorCode;
-    for (ix = 0; inp[ix] == ' ' && ix < 1000; ix++); // skip white spaces
-    while (inp[ix] != '\n' && inp[ix] != '\0' && ix < 1000) {
-        // extract a word
-        for (wordlen = 0; !wordEnding(inp[ix]) && ix < 1000; ix++, wordlen++) {
-            tmp[wordlen] = inp[ix];
+    char *command = strtok(inp, ";");
+    
+    while (command != NULL) {
+        for (ix = 0; command[ix] == ' ' && ix < 1000; ix++); // skip white spaces
+        while (command[ix] != '\n' && command[ix] != '\0' && tWordLen < 1000) {
+
+            // extract a word
+            for (wordlen = 0; !wordEnding(command[ix]) && tWordLen < 1000; ix++, wordlen++) {
+                tmp[wordlen] = command[ix];
+                tWordLen += wordlen;
+            }
+            tmp[wordlen] = '\0';
+            words[w] = strdup(tmp);
+            w++;
+
+            if (command[ix] == '\0') break;
+            ix++;
         }
-        tmp[wordlen] = '\0';
-        words[w] = strdup(tmp);
-        w++;
-        if (inp[ix] == '\0') break;
-        ix++;
+        errorCode = interpreter(words, w);
+        command = strtok(NULL, ";");
+        w = 0;
     }
-    errorCode = interpreter(words, w);
     return errorCode;
 }
