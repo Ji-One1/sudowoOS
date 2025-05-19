@@ -47,6 +47,7 @@ int my_ls();
 int my_mkdir(char *dirname);
 int my_touch(char *filename);
 int my_cd(char *dirname);
+int exec(char *args[], int args_size);
 int badcommandFileDoesNotExist();
 
 // Interpret commands and their arguments
@@ -100,9 +101,14 @@ int interpreter(char* command_args[], int args_size) {
     } else if (strcmp(command_args[0], "my_touch") == 0) {
         if (args_size != 2) return badcommand();
         return my_touch(command_args[1]);
+
     } else if (strcmp(command_args[0], "my_cd") == 0) {
-    if (args_size != 2) return badcommand();
+        if (args_size != 2) return badcommand();
     return my_cd(command_args[1]); 
+
+    } else if (strcmp(command_args[0], "exec") == 0) {
+        
+    return exec(&command_args[1], args_size - 1); 
 
     } else return badcommand();
 }
@@ -265,3 +271,26 @@ int my_cd(char *dirname) {
     return badcommandCustom("my_cd"); 
 }
 
+int exec(char *args[], int args_size) {
+    pid_t pid = fork();
+    
+    //child
+    if (pid == 0) {
+        char *fork_args[args_size + 1];
+
+        for (int i = 0; i < args_size; i ++) {
+            fork_args[i] = args[i];
+        }
+
+        //Needed to initiate execvp params
+        fork_args[args_size] = NULL;
+
+        execvp(args[0], fork_args);
+        exit(1);
+
+    //parent
+    } else {
+        waitpid(pid, NULL, 0);
+        return 0;
+    }
+}
