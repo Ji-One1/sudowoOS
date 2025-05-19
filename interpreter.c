@@ -47,7 +47,7 @@ int my_ls();
 int my_mkdir(char *dirname);
 int my_touch(char *filename);
 int my_cd(char *dirname);
-int exec(char *args[], int args_size);
+int my_fork(char *args[], int args_size);
 int badcommandFileDoesNotExist();
 
 // Interpret commands and their arguments
@@ -108,7 +108,7 @@ int interpreter(char* command_args[], int args_size) {
 
     } else if (strcmp(command_args[0], "exec") == 0) {
         
-    return exec(&command_args[1], args_size - 1); 
+    return my_fork(&command_args[1], args_size - 1); 
 
     } else return badcommand();
 }
@@ -271,7 +271,7 @@ int my_cd(char *dirname) {
     return badcommandCustom("my_cd"); 
 }
 
-int exec(char *args[], int args_size) {
+int my_fork(char *args[], int args_size) {
     pid_t pid = fork();
     
     //child
