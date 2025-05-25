@@ -116,12 +116,17 @@ int interpreter(char* command_args[], int args_size) {
 int help() {
 
     // note the literal tab characters here for alignment
-    char help_string[] = "COMMAND			DESCRIPTION\n \
-help			Displays all the commands\n \
-quit			Exits / terminates the shell with “Bye!”\n \
-set VAR STRING		Assigns a value to shell memory\n \
-print VAR		Displays the STRING assigned to VAR\n \
-run SCRIPT.TXT		Executes the file SCRIPT.TXT\n ";
+    char help_string[] = "COMMAND           DESCRIPTION\n \
+help            Displays all the commands\n \
+quit            Exits / terminates the shell with “Bye!”\n \
+set VAR STRING      Assigns a value to shell memory\n \
+print VAR       Displays the STRING assigned to VAR\n \
+echo VAR        Displays VAR. If VAR is a shell variable, displays its value.\n \
+run SCRIPT.TXT      Executes the file SCRIPT.TXT\n \
+my_ls           Displays all files and directories in the current directory\n \
+my_mkdir DIRNAME    Creates a new directory DIRNAME\n \
+my_touch FILENAME   Creates a new file FILENAME\n \
+my_cd DIRNAME       Changes the current directory to DIRNAME\n ";
     printf("%s\n", help_string);
     return 0;
 }
