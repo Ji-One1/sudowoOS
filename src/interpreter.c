@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include "utils.h"
 #include <sys/stat.h>
+#include "interpreter.h"
 
 
 int MAX_ARGS_SIZE = 7;
@@ -261,7 +262,6 @@ int my_mkdir(char *dirname) {
 int my_touch(char *filename) {
 
     if (!is_alphanumeric(filename)) return badcommandCustom("my_touch");
- 
     FILE *file = fopen(filename, "a");
     fclose(file);
     return 0;
