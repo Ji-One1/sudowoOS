@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include "shellmemory.h"
 
 struct memory_struct {
@@ -107,15 +108,15 @@ int set_memory(char *script[], int script_size) {
             return -1;
         }
     }
-    return 0;
+    return free_address;
 }
 
-void get_memory(int address, int size, char **script) {
+int get_memory(int address, int size, char **script) {
     if ((address + size ) > MEM_SIZE) { return -1; }
     for (int i = 0; i < size; i++) {
         script[i] = strdup(shell_memory[i]);
     }
-    return script;
+    return 0;
 }
 
 int free_memory(int address, int size) {

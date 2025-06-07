@@ -8,6 +8,8 @@
 #include "utils.h"
 #include <sys/stat.h>
 #include "interpreter.h"
+#include "pcb.h"
+#include "scheduler.h"
 
 
 int MAX_ARGS_SIZE = 7;
@@ -185,7 +187,10 @@ int run(char *script) {
 
     fclose(p);
     
-    set_memory(shell_memory, count);
+    int address = set_memory(shell_memory, count);
+    PCB* pcb = init_PCB(address, count, address);
+    enqueue(pcb);
+    FCFS_execute_next_process();
 
     for (int i = 0; i < count; i++) {
         free(shell_memory[i]);
