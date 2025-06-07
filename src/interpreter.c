@@ -142,13 +142,13 @@ int set(char *var, char *values[], int args_size) {
             strcat(value, " ");
         }
     }
-    mem_set_value(var, value);
+    set_var_value(var, value);
 
     return 0;
 }
 
 int print(char *var) {
-    printf("%s\n", mem_get_value(var));
+    printf("%s\n", get_var_value(var));
     return 0;
 }
 
@@ -157,7 +157,7 @@ int echo(char *var) {
         printf("%s\n", var);
         return 0;
     }
-    char *val = mem_get_value(var + 1);
+    char *val = get_var_value(var + 1);
     if (strcmp(val, "Variable does not exist") == 0) {
         printf("should not run\n");
         val = "";
@@ -171,23 +171,25 @@ int run(char *script) {
     int errCode = 0;
     char line[MAX_USER_INPUT];
     FILE *p = fopen(script, "rt");  // the program is in a file
+    char *shell_memory[MAX_LINES];
+    int count = 0;
 
     if (p == NULL) {
         return badcommandFileDoesNotExist();
     }
 
-    fgets(line, MAX_USER_INPUT-1, p);
-    while (1) {
-        errCode = parseInput(line);	// which calls interpreter()
-        memset(line, 0, sizeof(line));
-
-        if (feof(p)) {
-            break;
-        }
-        fgets(line, MAX_USER_INPUT-1, p);
+    while (count < MAX_LINES && fgets(line, MAX_USER_INPUT-1, p)) {
+        shell_memory[count] = strdup(line);
+        count++;
     }
 
     fclose(p);
+    
+    set_memory(shell_memory, count);
+
+    for (int i = 0; i < count; i++) {
+        free(shell_memory[i]);
+    }
 
     return errCode;
 }
@@ -241,7 +243,7 @@ int my_mkdir(char *dirname) {
     }
 
     if (var) {
-        char *val = mem_get_value(dirname);
+        char *val = get_var_value(dirname);
         if (strcmp(val, "Variable does not exist") == 0) {
             return badcommandCustom("my_mkdir");
         }
