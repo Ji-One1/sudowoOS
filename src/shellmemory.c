@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "shellmemory.h"
-
+#include <stdio.h>
 struct memory_struct {
     char *var;
     char *value;
@@ -44,15 +44,15 @@ void mem_init() {
 void set_var_value(char *var_in, char *value_in) {
     int i;
 
-    for (i = 0; i < MEM_SIZE; i++) {
-        if (strcmp(var_value_table[i].var, var_in) == 0){
+    for (i = 0; i < VAR_TABLE_SIZE; i++) {
+        if (var_value_table[i].var != NULL && strcmp(var_value_table[i].var, var_in) == 0){
             var_value_table[i].value = strdup(value_in);
             return;
         }
     }
 
     // Value does not exist, need to find a free spot.
-    for (i = 0; i < MEM_SIZE; i++) {
+    for (i = 0; i < VAR_TABLE_SIZE; i++) {
         if (var_value_table[i].var == NULL){
             var_value_table[i].var = strdup(var_in);
             var_value_table[i].value = strdup(value_in);
@@ -67,8 +67,8 @@ void set_var_value(char *var_in, char *value_in) {
 char *get_var_value(char *var_in) {
     int i;
 
-    for (i = 0; i < MEM_SIZE; i++) {
-        if (strcmp(var_value_table[i].var, var_in) == 0) {
+    for (i = 0; i < VAR_TABLE_SIZE; i++) {
+        if (var_value_table[i].var != NULL && strcmp(var_value_table[i].var, var_in) == 0) {
             return strdup(var_value_table[i].value);
         }
     }
@@ -114,7 +114,7 @@ int set_memory(char *script[], int script_size) {
 int get_memory(int address, int size, char **script) {
     if ((address + size ) > MEM_SIZE) { return -1; }
     for (int i = 0; i < size; i++) {
-        script[i] = strdup(shell_memory[i]);
+        script[i] = strdup(shell_memory[address + i]);
     }
     return 0;
 }

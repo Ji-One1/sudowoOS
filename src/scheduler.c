@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <string.h>
 #include "pcb.h"
 #include "shellmemory.h"
 #include "shell.h"
@@ -5,6 +7,9 @@
 
 int FCFS_execute_next_process() {
     PCB* process = dequeue();
+    if (process == NULL) {
+        return 0;
+    }
     char *script[process->length];
     int err_code = get_memory(process->start_address, process->length, script);
     if (err_code != 0) { return -1; }
